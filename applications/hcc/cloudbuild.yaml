@@ -3,7 +3,7 @@ steps:
     entrypoint: 'bash'
     args: [
       '-c',
-      'pwd && ls -al && pip install pyyaml google-cloud-compute && python ./applications/hcc/update_zone_region.py && git config user.email $_GITUSER_EMAIL && git config user.name $_GITUSER_NAME && git add. && git commit -m "Update from Cloud Build"'
+      'pwd && ls -al && pip install pyyaml google-cloud-compute && python ./applications/hcc/update_zone_region.py --project_id $PROJECT_ID && git config user.email $_GITUSER_EMAIL && git config user.name $_GITUSER_NAME && git add. && git commit -m "Update from Cloud Build"'
     ]
   - name: 'gcr.io/cloud-builders/git'
     args: ['push', 'origin', '${BRANCH_NAME}']
