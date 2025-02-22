@@ -95,7 +95,7 @@ def create_zone_to_region_map(project_id):
 
 
 def write_zone_to_region_map_to_json(
-    project_id, filename="zone_to_region.json"
+    project_id, filename="./applications/hcc/zone_to_region.json"
 ):
   """Creates a zone-to-region map and writes it to a JSON file."""
   zone_to_region = create_zone_to_region_map(project_id)
@@ -125,7 +125,7 @@ def get_available_zones(project_id, machine_type):
   ]
   return available_zones
 
-def update_blueprint_metadata(project_id, machine_type, blueprint_file="metadata.display.yaml"):
+def update_blueprint_metadata(project_id, machine_type, blueprint_file="./applications/hcc/metadata.display.yaml"):
   """Updates the allowlisted_zones in the blueprint metadata file based on machine type availability."""
   try:
     with open(blueprint_file, 'r') as file:
