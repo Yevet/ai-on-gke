@@ -25,8 +25,8 @@ steps:
     - |
         git status
         git branch
-        git config user.email $_GITUSER_EMAIL
-        git config user.name $_GITUSER_NAME
+        git config user.email ${_GITUSER_EMAIL}
+        git config user.name ${_GITUSER_NAME}
         git add ./applications/hcc/zone_to_region.json
         git commit -m "Update from Cloud Build"
         git push origin ${BRANCH_NAME}
