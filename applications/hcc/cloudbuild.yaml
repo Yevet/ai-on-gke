@@ -29,3 +29,6 @@ steps:
         git add ./applications/hcc/zone_to_region.json
         git commit -m "Update from Cloud Build"
         git push origin ${BRANCH_NAME}
+
+options:
+  logging: CLOUD_LOGGING_ONLY
