@@ -8,9 +8,12 @@ steps:
         apt-get install -y git && \
         git checkout ${BRANCH_NAME} && \
         pip install pyyaml google-cloud-compute && \
-        python./applications/hcc/update_zone_region.py --project_id $PROJECT_ID
+        python ./applications/hcc/update_zone_region.py --project_id $PROJECT_ID && \
+        git config user.email $_GITUSER_EMAIL && git config user.name $_GITUSER_NAME && \
+        git status
       '''
     ]
+    
     # dir: '/workspace'
 
   # - name: 'gcr.io/cloud-builders/git'
