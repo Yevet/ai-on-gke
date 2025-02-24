@@ -3,7 +3,7 @@ steps:
     entrypoint: 'bash'
     args: [
       '-c',
-      'git checkout $BRANCH_NAME && git pull origin $BRANCH_NAME' 
+      'git pull && git checkout $BRANCH_NAME && git pull origin $BRANCH_NAME' 
     ]
   - name: 'python:3.9-slim'
     entrypoint: 'bash'
