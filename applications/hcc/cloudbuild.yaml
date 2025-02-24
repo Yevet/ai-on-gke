@@ -1,35 +1,22 @@
 steps:
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args: [
+      '-c',
+      'git checkout $BRANCH_NAME && git pull origin $BRANCH_NAME' 
+    ]
   - name: 'python:3.9-slim'
     entrypoint: 'bash'
     args: [
       '-c',
-      '''
-        echo "Updating apt-get..." && \
-        apt-get update && \
-        echo "Installing git..." && \
-        apt-get install -y git && \
-        echo "Checking out branch ${BRANCH_NAME}..." && \
-        git checkout ${BRANCH_NAME} && \
-        echo "Installing Python dependencies..." && \
-        pip install pyyaml google-cloud-compute && \
-        echo "Running Python script..." && \
-        python ./applications/hcc/update_zone_region.py --project_id $PROJECT_ID && \
-        echo "Configuring Git..." && \
-        git config user.email $_GITUSER_EMAIL && git config user.name $_GITUSER_NAME && \
-        echo "Checking Git status..." && \
-        git status
-      '''
+      'pip install pyyaml google-cloud-compute && python ./applications/hcc/update_zone_region.py --project_id $PROJECT_ID'
     ]
-    dir: '/workspace'
-    
-    # dir: '/workspace'
-
-  # - name: 'gcr.io/cloud-builders/git'
-  #   entrypoint: 'bash'
-  #   args: [
-  #     '-c',
-  #     'git status && git branch && git config user.email $_GITUSER_EMAIL && git config user.name $_GITUSER_NAME && git add ./applications/hcc/zone_to_region.json && git add ./applications/hcc/metadata.display.yaml && git commit -m "Update from Cloud Build" && git push origin ${BRANCH_NAME}' 
-  #   ]
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args: [
+      '-c',
+      'git status && git branch && git config user.email $_GITUSER_EMAIL && git config user.name $_GITUSER_NAME && git add ./applications/hcc/zone_to_region.json && git commit -m "Update from Cloud Build" && git push origin ${BRANCH_NAME}' 
+    ]
 
 
 options:
