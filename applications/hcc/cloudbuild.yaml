@@ -16,6 +16,7 @@ steps:
     - |
         pip install pyyaml google-cloud-compute
         python ./applications/hcc/update_zone_region.py --project_id $PROJECT_ID
+        touch ./applications/hcc/new_file.txt
 
   - name: 'gcr.io/cloud-builders/git'
     entrypoint: 'bash'
