@@ -95,7 +95,7 @@ def create_zone_to_region_map(project_id):
 
 
 def write_zone_to_region_map_to_json(
-    project_id, filename="./zone_to_region.json"
+    project_id, filename="./applications/hcc/zone_to_region1.json"
 ):
   """Creates a zone-to-region map and writes it to a JSON file."""
   zone_to_region = create_zone_to_region_map(project_id)
