@@ -4,10 +4,15 @@ steps:
     args:
     - '-c'
     - |
-        git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME 
-        git pull
+        # Access the SSH key from Secret Manager
+        echo "$SSH_KEY" > /root/.ssh/id_rsa
+        chmod 600 /root/.ssh/id_rsa
+        ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts  # Add github.com to known_hosts
+        git config --global user.email "$_GITUSER_EMAIL"
+        git config --global user.name "Yevet"
+        git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME
+        git pull origin $BRANCH_NAME #or just git pull
         git checkout $BRANCH_NAME
-        git pull origin $BRANCH_NAME
 
   - name: 'python:3.9-slim'
     entrypoint: 'bash'
@@ -15,8 +20,8 @@ steps:
     - '-c'
     - |
         pip install pyyaml google-cloud-compute
-        python ./applications/hcc/update_zone_region.py --project_id $PROJECT_ID
         touch ./applications/hcc/new_file.txt
+        python ./applications/hcc/update_zone_region.py --project_id $PROJECT_ID
 
   - name: 'gcr.io/cloud-builders/git'
     entrypoint: 'bash'
@@ -25,11 +30,17 @@ steps:
     - |
         git status
         git branch
-        git config user.email ${_GITUSER_EMAIL}
-        git config user.name ${_GITUSER_NAME}
-        git add ./applications/hcc/zone_to_region1.json
+        git config user.email "$_GITUSER_EMAIL"
+        git config user.name "Yevet"
+        git add ./applications/hcc/zone_to_region1.json # Fixed filename
         git commit -m "Update from Cloud Build"
-        git push origin ${BRANCH_NAME}
+        git push origin $BRANCH_NAME
+    secretEnv: ['SSH_KEY'] # Make SSH_KEY available
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_ID/secrets/github-ssh-key/versions/latest # Replace with your secret name and version
+    env: 'SSH_KEY'
 
 options:
-  logging: CLOUD_LOGGING_ONLY
+   logging: CLOUD_LOGGING_ONLY
