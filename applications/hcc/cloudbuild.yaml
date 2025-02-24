@@ -10,9 +10,9 @@ steps:
         ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts  # Add github.com to known_hosts
         git config --global user.email "$_GITUSER_EMAIL"
         git config --global user.name "Yevet"
+        git remote set-url origin git@github.com:Yevet/ai-on-gke.git  #  **IMPORTANT: Use SSH URL**
         git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME
-        git pull origin $BRANCH_NAME #or just git pull
-        git checkout $BRANCH_NAME
+        git pull origin $BRANCH_NAME  #or just git pull
 
   - name: 'python:3.9-slim'
     entrypoint: 'bash'
@@ -20,7 +20,7 @@ steps:
     - '-c'
     - |
         pip install pyyaml google-cloud-compute
-        touch ./applications/hcc/new_file.txt
+        touch ./applications/hcc/new_file.txt  # Creates an empty file.
         python ./applications/hcc/update_zone_region.py --project_id $PROJECT_ID
 
   - name: 'gcr.io/cloud-builders/git'
@@ -32,15 +32,17 @@ steps:
         git branch
         git config user.email "$_GITUSER_EMAIL"
         git config user.name "Yevet"
-        git add ./applications/hcc/zone_to_region1.json # Fixed filename
+        git add ./applications/hcc/zone_to_region1.json
         git commit -m "Update from Cloud Build"
         git push origin $BRANCH_NAME
-    secretEnv: ['SSH_KEY'] # Make SSH_KEY available
+    secretEnv: ['SSH_KEY']  # Make SSH_KEY available as an environment variable
 
 availableSecrets:
   secretManager:
-  - versionName: projects/$PROJECT_ID/secrets/github-ssh-key/versions/latest # Replace with your secret name and version
+  - versionName: projects/$PROJECT_ID/secrets/github-ssh-key/versions/latest  # Replace with your secret name/version
     env: 'SSH_KEY'
 
 options:
-   logging: CLOUD_LOGGING_ONLY
+  logging: CLOUD_LOGGING_ONLY  #  Generally a good practice
+
+# No substitutions section needed for SSH_KEY
