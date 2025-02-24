@@ -3,7 +3,12 @@ steps:
     entrypoint: 'bash'
     args: [
       '-c',
-      'git pull && git checkout $BRANCH_NAME && git pull origin $BRANCH_NAME' 
+      '''
+        git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME && \
+        git pull && \
+        git checkout $BRANCH_NAME && \
+        git pull origin $BRANCH_NAME
+      '''
     ]
   - name: 'python:3.9-slim'
     entrypoint: 'bash'
