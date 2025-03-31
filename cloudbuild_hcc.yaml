@@ -160,7 +160,7 @@ steps:
     _INTERVAL=20   
     _START_TIME=$(date +%s)
     echo "$_START_TIME"
-    while [ $_START_TIME -lt $(($_TIMEOUT + $_START_TIME)) ]; do
+    while [ $_START_TIME -lt $(($_TIMEOUT + _START_TIME)) ]; do
         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
         echo "aaaaaaaaa"
         
