@@ -163,7 +163,7 @@ steps:
 
     # Loop until the job status is 'Running' or _TIMEOUT
     # while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
-        status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[].type')
+        status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
         echo "status: $status"
         
         # if [[ "$status" == "Complete" ]]; then
