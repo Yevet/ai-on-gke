@@ -13,7 +13,14 @@
 # limitations under the License.
 
 steps:
-
+- id: "validate cluster"
+  name: "gcr.io/$PROJECT_ID/terraform"
+  script: |
+    terraform init -no-color
+    terraform validate -no-color
+  dir: "applications/hcc/"
+  waitFor: ["-"]
+  
 # - id: 'create a3ultra with nccl'
 #   name: 'gcr.io/$PROJECT_ID/terraform'
 #   entrypoint: 'sh'
@@ -135,7 +142,7 @@ steps:
 
     echo "cluster creation successfully" > /workspace/a3m_nccl_result.txt
   allowFailure: true
-  waitFor: ["-"]
+  waitFor: ["validate cluster"]
 
 - id: 'wait for a3m nccl job to start'
   name: 'gcr.io/cloud-builders/kubectl'
@@ -246,7 +253,7 @@ steps:
     -var=a3mega_recipe="llama3.1_7b_nemo_pretraining" \
     -var=gpu_type="A3 Mega" \
     -var=node_count_nemo=2 \
-    -var=goog_cm_deployment_name="cloudbuild-a3m-nccl" \
+    -var=goog_cm_deployment_name="cloudbuild-a3m-nemo" \
     -var=a3_ultra_zone=$_A3MEGA_ZONE \
     -var=reservation=$_A3MEGA_RESERVATION \
     -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
@@ -348,7 +355,7 @@ steps:
     -var=a3mega_recipe="llama3.1_7b_nemo_pretraining" \
     -var=gpu_type="A3 Mega" \
     -var=node_count_nemo=2 \
-    -var=goog_cm_deployment_name="cloudbuild-a3m-nccl" \
+    -var=goog_cm_deployment_name="cloudbuild-a3m-nemo" \
     -var=a3_ultra_zone=$_A3MEGA_ZONE \
     -var=reservation=$_A3MEGA_RESERVATION \
     -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
