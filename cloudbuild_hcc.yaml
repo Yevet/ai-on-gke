@@ -160,13 +160,16 @@ steps:
     _INTERVAL=20   
     _START_TIME=$(date +%s)
     echo "$_START_TIME"
-    while [ _START_TIME -lt $(($_TIMEOUT + _START_TIME))) ]; do
+    while [ $(date +%s) -lt $(($_TIMEOUT + $START_TIME)) ]; do
         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
         echo "aaaaaaaaa"
         
-        if [ "$status" = "Complete" ]; then
+        if [ "$status" = "Started" ]; then
           echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
           exit 0
+        elif [ "$status" = "Failed" ]; then
+          echo "Job nccl-test-w-0 failed to start."
+          exit 1
         fi
         sleep $_INTERVAL
     done
