@@ -156,22 +156,18 @@ steps:
     apt-get update
     apt-get install -y jq
     # Set the _TIMEOUT and _INTERVAL
-    _TIMEOUT=120  # 2 minutes
-    _INTERVAL=5   # 5 seconds
-
-    # _JOB_NAME=$(kubectl get job -n default -o json | jq -r '.items[].metadata.name' | grep 'nccl-test')
-
-    # Loop until the job status is 'Running' or _TIMEOUT
-    # while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
+    _TIMEOUT=300  
+    _INTERVAL=20   
+    while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
         echo "status: $status"
         
-        # if [[ "$status" == "Complete" ]]; then
-        #   echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
-        #   exit 0
-        # fi
-        # sleep $_INTERVAL
-    # done
+        if [[ "$status" == "Complete" ]]; then
+          echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
+          exit 0
+        fi
+        sleep $_INTERVAL
+    done
 
     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
     exit 1
