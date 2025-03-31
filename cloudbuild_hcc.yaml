@@ -152,7 +152,7 @@ steps:
   - |
     set -e
 
-    gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_ZONE --project $_A3MEGA_PROJECT
+    gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
     
     # Set the _TIMEOUT and _INTERVAL
     _TIMEOUT=120  # 2 minutes
@@ -268,7 +268,7 @@ steps:
   - |
     set -e
 
-    gcloud container clusters get-credentials cloudbuild-a3m-nemo --location $_A3MEGA_ZONE --project $_A3MEGA_PROJECT
+    gcloud container clusters get-credentials cloudbuild-a3m-nemo --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
     
     # Set the _TIMEOUT and _INTERVAL
     _TIMEOUT=120  # 2 minutes
