@@ -391,7 +391,7 @@ steps:
       echo "a3mega with nemo(llama 7b) test failed or result file not found or did nor find necessary contents"
       exit 1
     fi
-  waitFor: ['cleanup a3ultra with nccl', 'cleanup a3ultra with nemo', 'cleanup a3mega with nccl', 'cleanup a3mega with nemo']
+  waitFor: ['cleanup a3mega with nccl', 'cleanup a3mega with nemo']
 
 substitutions:
   _A3ULTRA_ZONE: ""
