@@ -14,7 +14,7 @@
 
 steps:
 - id: "validate cluster"
-  name: "gcr.io/google-cloud-cli"
+  name: "hashicorp/terraform:latest"
   script: |
     terraform init -no-color
     terraform validate -no-color
