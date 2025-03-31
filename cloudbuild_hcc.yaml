@@ -166,7 +166,7 @@ steps:
           echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
           exit 0
         fi
-        sleep $_INTERVAL
+        # sleep $_INTERVAL
     # done
 
     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
