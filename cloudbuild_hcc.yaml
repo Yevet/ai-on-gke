@@ -153,7 +153,8 @@ steps:
     set -e
 
     gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
-    
+    apt-get update
+    apt-get install -y jq
     # Set the _TIMEOUT and _INTERVAL
     _TIMEOUT=120  # 2 minutes
     _INTERVAL=5   # 5 seconds
@@ -267,6 +268,9 @@ steps:
   - '-c'
   - |
     set -e
+
+    apt-get update
+    apt-get install -y jq
 
     gcloud container clusters get-credentials cloudbuild-a3m-nemo --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
     
