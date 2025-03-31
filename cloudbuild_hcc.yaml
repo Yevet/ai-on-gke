@@ -14,7 +14,7 @@
 
 steps:
 - id: "validate cluster"
-  name: "gcr.io/cloud-builders/terraform"
+  name: "gcr.io/gke-ai-eco-dev/terraform"
   script: |
     terraform init -no-color
     terraform validate -no-color
