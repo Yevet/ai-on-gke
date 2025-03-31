@@ -120,7 +120,7 @@ steps:
 #   waitFor: ['create a3ultra with nemo']
 
 - id: 'create a3mega with nccl'
-  name: 'gcr.io/cloud-builders/terraform'
+  name: 'hashicorp/terraform:latest'
   entrypoint: 'sh'
   args:
   - '-c'
@@ -216,7 +216,7 @@ steps:
   waitFor: ["wait for a3m nccl job to start"]
 
 - id: 'cleanup a3mega with nccl'
-  name: 'gcr.io/cloud-builders/terraform'
+  name: 'hashicorp/terraform:latest'
   entrypoint: 'bash'
   args:
   - '-c'
@@ -239,7 +239,7 @@ steps:
   waitFor: ["check a3m NCCL result"]
 
 - id: 'create a3mega with nemo'
-  name: 'gcr.io/cloud-builders/terraform'
+  name: 'hashicorp/terraform:latest'
   entrypoint: 'sh'
   args:
   - '-c'
@@ -341,7 +341,7 @@ steps:
   waitFor: ['wait for a3m nemo job to start']
 
 - id: 'cleanup a3mega with nemo'
-  name: 'gcr.io/cloud-builders/terraform'
+  name: 'hashicorp/terraform:latest'
   entrypoint: 'bash'
   args:
   - '-c'
@@ -364,7 +364,7 @@ steps:
   waitFor: ['check a3m nemo result']
 
 - id: 'check result'
-  name: 'gcr.io/cloud-builders/terraform'
+  name: 'hashicorp/terraform:latest'
   entrypoint: 'bash'
   args:
   - '-c'
