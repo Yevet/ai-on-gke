@@ -119,30 +119,30 @@ steps:
 #   allowFailure: true
 #   waitFor: ['create a3ultra with nemo']
 
-- id: 'create a3mega with nccl'
-  name: 'hashicorp/terraform:latest'
-  entrypoint: 'sh'
-  args:
-  - '-c'
-  - |
-    set -e
+# - id: 'create a3mega with nccl'
+#   name: 'hashicorp/terraform:latest'
+#   entrypoint: 'sh'
+#   args:
+#   - '-c'
+#   - |
+#     set -e
 
-    cd /workspace/applications/hcc/
-    terraform apply \
-    -var-file=a3mega_workloads.tfvars \
-    -var=project_id=$_A3MEGA_PROJECT \
-    -var=a3mega_recipe="gke-nccl" \
-    -var=gpu_type="A3 Mega" \
-    -var=node_count_gke_nccl=2 \
-    -var=goog_cm_deployment_name="cloudbuild-a3m-nccl" \
-    -var=a3_mega_zone=$_A3MEGA_ZONE \
-    -var=reservation=$_A3MEGA_RESERVATION \
-    -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
-    -auto-approve -no-color
+#     cd /workspace/applications/hcc/
+#     terraform apply \
+#     -var-file=a3mega_workloads.tfvars \
+#     -var=project_id=$_A3MEGA_PROJECT \
+#     -var=a3mega_recipe="gke-nccl" \
+#     -var=gpu_type="A3 Mega" \
+#     -var=node_count_gke_nccl=2 \
+#     -var=goog_cm_deployment_name="cloudbuild-a3m-nccl" \
+#     -var=a3_mega_zone=$_A3MEGA_ZONE \
+#     -var=reservation=$_A3MEGA_RESERVATION \
+#     -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
+#     -auto-approve -no-color
 
-    echo "cluster creation successfully" > /workspace/a3m_nccl_result.txt
-  allowFailure: true
-  waitFor: ["validate cluster"]
+#     echo "cluster creation successfully" > /workspace/a3m_nccl_result.txt
+#   allowFailure: true
+#   waitFor: ["validate cluster"]
 
 - id: 'wait for a3m nccl job to start'
   name: 'gcr.io/cloud-builders/kubectl'
@@ -152,10 +152,7 @@ steps:
   - |
     set -e
 
-    gcloud container clusters get-credentials \
-    $_A3MEGA_DEPLOYMENT_NAME \
-    --location $_A3MEGA_ZONE \
-    --project $_A3MEGA_PROJECT
+    gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_ZONE --project $_A3MEGA_PROJECT
     
     # Set the _TIMEOUT and _INTERVAL
     _TIMEOUT=120  # 2 minutes
@@ -177,7 +174,7 @@ steps:
     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
     exit 1
   allowFailure: true
-  waitFor: ['create a3mega with nccl']
+  waitFor: ['-']
 
 - id: 'check a3m NCCL result'
   name: 'gcr.io/cloud-builders/gsutil'
@@ -192,7 +189,7 @@ steps:
     _INTERVAL=15  # 15 seconds
 
     # Construct the bucket name and file pattern
-    _BUCKET_NAME="${_A3MEGA_PROJECT}-${_A3MEGA_DEPLOYMENT_NAME}-result"
+    _BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result"
     _FILE_PATTERN="all_gather_perf*"
     _GCS_FILE_PATH="gs://${_BUCKET_NAME}/${_FILE_PATTERN}.txt"
 
@@ -271,10 +268,7 @@ steps:
   - |
     set -e
 
-    gcloud container clusters get-credentials \
-    $_A3MEGA_DEPLOYMENT_NAME \
-    --location $_A3MEGA_ZONE \
-    --project $_A3MEGA_PROJECT
+    gcloud container clusters get-credentials cloudbuild-a3m-nemo --location $_A3MEGA_ZONE --project $_A3MEGA_PROJECT
     
     # Set the _TIMEOUT and _INTERVAL
     _TIMEOUT=120  # 2 minutes
@@ -309,7 +303,7 @@ steps:
     _INTERVAL=30  # 15 seconds
 
     # Construct the bucket name and file pattern
-    _BUCKET_NAME="${_A3MEGA_PROJECT}-${_A3MEGA_DEPLOYMENT_NAME}-result"
+    _BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nemo-result"
     _FILE_PREFIX="nemo-experiments/benchmark-"
     _FILE_SUFFIX="/dllogger/rank-0/dllogger.json"
     _GCS_FILE_PATTERN="gs://${_BUCKET_NAME}/${_FILE_PREFIX}*${_FILE_SUFFIX}"
