@@ -158,7 +158,7 @@ steps:
     # Set the _TIMEOUT and _INTERVAL
     _TIMEOUT=300  
     _INTERVAL=20   
-    # while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
+    while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
         echo "status: $status"
         
@@ -166,8 +166,8 @@ steps:
           echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
           exit 0
         fi
-        # sleep $_INTERVAL
-    # done
+        sleep $_INTERVAL
+    done
 
     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
     exit 1
