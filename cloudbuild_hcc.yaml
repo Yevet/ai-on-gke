@@ -156,24 +156,20 @@ steps:
     apt-get update
     apt-get install -y jq
     # Set the _TIMEOUT and _INTERVAL
-    _TIMEOUT=300  
-    _INTERVAL=20   
-    _START_TIME=$(date +%s)
-    echo "$_START_TIME"
-    while [ $_START_TIME -lt $(($_TIMEOUT + _START_TIME)) ]; do
+    # _TIMEOUT=300  
+    # _INTERVAL=20   
+    # _START_TIME=$(date +%s)
+    # echo "$_START_TIME"
+    # while [ $(date +%s) -lt $(($_TIMEOUT + _START_TIME)) ]; do
+        #sleep 300
         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
-        echo "aaaaaaaaa"
         
         if [ "$status" = "Started" ]; then
           echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
           exit 0
-        elif [ "$status" = "Failed" ]; then
-          echo "Job nccl-test-w-0 failed to start."
-          exit 1
         fi
-        sleep $_INTERVAL
-    done
-
+        # sleep $_INTERVAL
+    # done
     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
     exit 1
   allowFailure: true
@@ -188,15 +184,15 @@ steps:
     set -e
 
     # Set the _TIMEOUT and _INTERVAL
-    _TIMEOUT=300  # 10 minutes
-    _INTERVAL=15  # 15 seconds
+    # _TIMEOUT=300  # 10 minutes
+    # _INTERVAL=15  # 15 seconds
 
     # Construct the bucket name and file pattern
     _BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result"
     _FILE_PATTERN="all_gather_perf*"
     _GCS_FILE_PATH="gs://${_BUCKET_NAME}/${_FILE_PATTERN}.txt"
 
-    while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
+    # while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
       if gsutil ls "$_GCS_FILE_PATH" > /dev/null 2>&1; then
         if gsutil cat "$_GCS_FILE_PATH" | grep -q "Avg bus bandwidth"; then
           echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
@@ -205,9 +201,10 @@ steps:
           echo "NCCL test log file(s) found, but without 'Avg bus bandwidth'"
           exit 1
         fi
-      else
-        echo "Waiting for NCCL test log file(s) matching pattern: $_GCS_FILE_PATH"
-        sleep $_INTERVAL
+      # else
+      #   echo "Waiting for NCCL test log file(s) matching pattern: $_GCS_FILE_PATH"
+      #   sleep $_INTERVAL
+
       fi
     done
     echo "_TIMEOUT reached. NCCL test log file(s) not found or test did not complete within $_TIMEOUT seconds."
