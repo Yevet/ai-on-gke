@@ -162,7 +162,7 @@ steps:
         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
         echo "status: $status"
         
-        if [ "$status" == "Complete" ]; then
+        if [ "$status" = "Complete" ]; then
           echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
           exit 0
         fi
