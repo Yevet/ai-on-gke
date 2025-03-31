@@ -162,15 +162,15 @@ steps:
     # _JOB_NAME=$(kubectl get job -n default -o json | jq -r '.items[].metadata.name' | grep 'nccl-test')
 
     # Loop until the job status is 'Running' or _TIMEOUT
-    while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
+    # while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[].type')
         echo "status: $status"
         
-        if [[ "$status" == "Complete" ]]; then
-          echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
-          exit 0
-        fi
-        sleep $_INTERVAL
+        # if [[ "$status" == "Complete" ]]; then
+        #   echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
+        #   exit 0
+        # fi
+        # sleep $_INTERVAL
     done
 
     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
