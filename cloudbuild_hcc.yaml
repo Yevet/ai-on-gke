@@ -171,7 +171,7 @@ steps:
         #   exit 0
         # fi
         # sleep $_INTERVAL
-    done
+    # done
 
     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
     exit 1
