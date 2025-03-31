@@ -402,12 +402,13 @@ substitutions:
   _A3MEGA_PROJECT: "supercomputer-testing"
   _A3MEGA_RESERVATION: "hcc-a3mega"
   _A3MEGA_PLACEMENT_POLICY_NAME: "kevinmcw-test"
-  _REGION: us-east4
-  _USER_NAME: github
-  _AUTOPILOT_CLUSTER: "false"
-  _BUILD_ID: ${BUILD_ID:0:8}
+  # _REGION: us-east4
+  # _USER_NAME: github
+  # _AUTOPILOT_CLUSTER: "false"
+  # _BUILD_ID: ${BUILD_ID:0:8}
 # logsBucket: gs://ai-on-gke-build-logs
 options:
+  logging: CLOUD_LOGGING_ONLY
   substitutionOption: "ALLOW_LOOSE"
   machineType: "E2_HIGHCPU_8"
 # _TIMEOUT: 5400s
