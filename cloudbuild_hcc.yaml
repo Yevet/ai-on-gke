@@ -193,8 +193,9 @@ steps:
     _GCS_FILE_PATH="gs://${_BUCKET_NAME}/${_FILE_PATTERN}.txt"
 
     # while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
-      if gsutil ls "$_GCS_FILE_PATH" > /dev/null 2>&1; then
       echo "NCCL test log file(s) : $_GCS_FILE_PATH"
+      if gsutil ls "$_GCS_FILE_PATH" > /dev/null 2>&1; then
+      echo "NCCL test log file(s)"
         if gsutil cat "$_GCS_FILE_PATH" | grep -q "Avg bus bandwidth"; then
           echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
           exit 0
