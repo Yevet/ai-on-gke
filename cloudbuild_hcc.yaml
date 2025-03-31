@@ -150,24 +150,24 @@ steps:
     --location $_A3MEGA_ZONE \
     --project $_A3MEGA_PROJECT
     
-    # Set the timeout and interval
-    timeout=120  # 2 minutes
-    interval=5   # 5 seconds
+    # Set the _TIMEOUT and _INTERVAL
+    _TIMEOUT=120  # 2 minutes
+    _INTERVAL=5   # 5 seconds
 
     _JOB_NAME=$(kubectl get job -n default -o json | jq -r '.items[].metadata.name' | grep 'nccl-test')
 
-    # Loop until the job status is 'Running' or timeout
-    while [ $(date +%s) -lt $(($timeout + $(date +%s))) ]; do
+    # Loop until the job status is 'Running' or _TIMEOUT
+    while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
         status=$(kubectl get job "$_JOB_NAME" -n default -o json | jq -r '.status.conditions[].type')
 
         if [[ "$status" == "Complete" ]]; then
           echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
           exit 0
         fi
-        sleep $interval
+        sleep $_INTERVAL
     done
 
-    echo "Timeout reached. Job did not start within $timeout seconds."
+    echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
     exit 1
   allowFailure: true
   waitFor: ['create a3mega with nccl']
@@ -180,16 +180,16 @@ steps:
   - |
     set -e
 
-    # Set the timeout and interval
-    timeout=300  # 10 minutes
-    interval=15  # 15 seconds
+    # Set the _TIMEOUT and _INTERVAL
+    _TIMEOUT=300  # 10 minutes
+    _INTERVAL=15  # 15 seconds
 
     # Construct the bucket name and file pattern
     _BUCKET_NAME="${_A3MEGA_PROJECT}-${_A3MEGA_DEPLOYMENT_NAME}-result"
     _FILE_PATTERN="all_gather_perf*"
     _GCS_FILE_PATH="gs://${_BUCKET_NAME}/${_FILE_PATTERN}.txt"
 
-    while [ $(date +%s) -lt $(($timeout + $(date +%s))) ]; do
+    while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
       if gsutil ls "$_GCS_FILE_PATH" > /dev/null 2>&1; then
         if gsutil cat "$_GCS_FILE_PATH" | grep -q "Avg bus bandwidth"; then
           echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
@@ -200,10 +200,10 @@ steps:
         fi
       else
         echo "Waiting for NCCL test log file(s) matching pattern: $_GCS_FILE_PATH"
-        sleep $interval
+        sleep $_INTERVAL
       fi
     done
-    echo "Timeout reached. NCCL test log file(s) not found or test did not complete within $timeout seconds."
+    echo "_TIMEOUT reached. NCCL test log file(s) not found or test did not complete within $_TIMEOUT seconds."
     exit 1
   allowFailure: true
   waitFor: ["wait for a3m nccl job to start"]
@@ -269,22 +269,22 @@ steps:
     --location $_A3MEGA_ZONE \
     --project $_A3MEGA_PROJECT
     
-    # Set the timeout and interval
-    timeout=120  # 2 minutes
-    interval=5   # 5 seconds
+    # Set the _TIMEOUT and _INTERVAL
+    _TIMEOUT=120  # 2 minutes
+    _INTERVAL=5   # 5 seconds
 
-    # Loop until the job status is 'Running' or timeout
-    while [ $(date +%s) -lt $(($timeout + $(date +%s))) ]; do
+    # Loop until the job status is 'Running' or _TIMEOUT
+    while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
         status=$(kubectl get job benchmark -n default -o json | jq -r '.status.conditions[].type')
 
         if [[ "$status" == "Complete" ]]; then
           echo "nemo start successfully" > /workspace/a3m_nemo_result.txt
           exit 0
         fi
-        sleep $interval
+        sleep $_INTERVAL
     done
 
-    echo "Timeout reached. Job did not start within $timeout seconds."
+    echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
     exit 1
   allowFailure: true
   waitFor: ['create a3mega with nemo']
@@ -297,9 +297,9 @@ steps:
   - |
     set -e
 
-    # Set the timeout and interval
-    timeout=300  # 10 minutes
-    interval=30  # 15 seconds
+    # Set the _TIMEOUT and _INTERVAL
+    _TIMEOUT=300  # 10 minutes
+    _INTERVAL=30  # 15 seconds
 
     # Construct the bucket name and file pattern
     _BUCKET_NAME="${_A3MEGA_PROJECT}-${_A3MEGA_DEPLOYMENT_NAME}-result"
@@ -307,7 +307,7 @@ steps:
     _FILE_SUFFIX="/dllogger/rank-0/dllogger.json"
     _GCS_FILE_PATTERN="gs://${_BUCKET_NAME}/${_FILE_PREFIX}*${_FILE_SUFFIX}"
 
-    while [ $(date +%s) -lt $(($timeout + $(date +%s))) ]; do
+    while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
       # List files matching the pattern
       file_list=$(gsutil ls "$_GCS_FILE_PATTERN" 2> /dev/null)
       if [ -n "$file_list" ]; then
@@ -324,11 +324,11 @@ steps:
         done
       else
         echo "Waiting for Nemo result file(s) matching pattern: $_GCS_FILE_PATTERN"
-        sleep $interval
+        sleep $_INTERVAL
       fi
     done
 
-    echo "Timeout reached. Nemo result file(s) not found or test did not complete within $timeout seconds."
+    echo "_TIMEOUT reached. Nemo result file(s) not found or test did not complete within $_TIMEOUT seconds."
     exit 1
   allowFailure: true
   waitFor: ['wait for a3m nemo job to start']
@@ -410,10 +410,10 @@ logsBucket: gs://ai-on-gke-build-logs
 options:
   substitutionOption: "ALLOW_LOOSE"
   machineType: "E2_HIGHCPU_8"
-timeout: 5400s
-availableSecrets:
-  secretManager:
-  - versionName: projects/gke-ai-eco-dev/secrets/cloudbuild-kaggle-username/versions/latest
-    env: "KAGGLE_USERNAME"
-  - versionName: projects/gke-ai-eco-dev/secrets/cloudbuild-kaggle-key/versions/latest
-    env: "KAGGLE_KEY"
+# _TIMEOUT: 5400s
+# availableSecrets:
+#   secretManager:
+#   - versionName: projects/gke-ai-eco-dev/secrets/cloudbuild-kaggle-username/versions/latest
+#     env: "KAGGLE_USERNAME"
+#   - versionName: projects/gke-ai-eco-dev/secrets/cloudbuild-kaggle-key/versions/latest
+#     env: "KAGGLE_KEY"
