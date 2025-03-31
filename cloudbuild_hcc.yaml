@@ -396,10 +396,12 @@ steps:
 
 substitutions:
   _A3ULTRA_ZONE: ""
+  _A3ULTRA_REGION: ""
   _A3ULTRA_PROJECT: ""
   _A3ULTRA_RESERVATION: ""
   _A3ULTRA_PLACEMENT_POLICY_NAME: ""
   _A3MEGA_ZONE: australia-southeast1-c
+  _A3MEGA_REGION: australia-southeast1
   _A3MEGA_PROJECT: "supercomputer-testing"
   _A3MEGA_RESERVATION: "hcc-a3mega"
   _A3MEGA_PLACEMENT_POLICY_NAME: "kevinmcw-test"
