@@ -158,6 +158,7 @@ steps:
     # Set the _TIMEOUT and _INTERVAL
     # _TIMEOUT=300  
     # _INTERVAL=20   
+    _START_TIME=$(date +%s)
     echo "start: ${_START_TIME}"
     # while [ $(date +%s) -lt $(($_TIMEOUT + _START_TIME)) ]; do
         #sleep 300
@@ -171,8 +172,6 @@ steps:
     # done
     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
     exit 1
-  env:
-    - '_START_TIME=$(date +%s)'
   allowFailure: true
   waitFor: ['-']
 
@@ -186,7 +185,8 @@ steps:
     bucket = ${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result 
     file_pattern = "all_gather_perf*"
     gcs_file_path = gs://${bucket}/${file_pattern}.txt
-
+    echo "gcs_file_path: ${gcs_file_path}"
+    
     if gsutil ls "$gcs_file_path" > /dev/null 2>&1; then
       echo "NCCL test log file2(s)"
       if gsutil cat "$gcs_file_path" | grep -q "Avg bus bandwidth"; then
