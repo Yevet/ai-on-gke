@@ -191,8 +191,8 @@ steps:
     _BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result"
     _FILE_PATTERN="all_gather_perf*"
     _GCS_FILE_PATH="gs://${_BUCKET_NAME}/${_FILE_PATTERN}.txt"
-    echo "_BUCKET_NAME : $_BUCKET_NAME"
-    echo "_FILE_PATTERN: $_FILE_PATTERN"
+    echo "_BUCKET_NAME : $(_BUCKET_NAME)"
+    echo "_FILE_PATTERN: ${_FILE_PATTERN}"
     echo "NCCL test log file1(s) : $_GCS_FILE_PATH"
     # while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
       
