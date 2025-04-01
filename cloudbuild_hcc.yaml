@@ -187,8 +187,7 @@ steps:
     gcs_file_path=gs://${bucket}/${file_pattern}.txt
     echo "gcs_file_path: ${gcs_file_path}"
     
-    if gsutil ls gs://supercomputer-testing-cloudbuild-a3m-nccl-result/all_gather_perf*.txt; then
-      echo "NCCL test log file2(s)"
+    if gsutil ls $gcs_file_path; then
       if gsutil cat $gcs_file_path | grep -q "Avg bus bandwidth"; then
         echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
         exit 0
