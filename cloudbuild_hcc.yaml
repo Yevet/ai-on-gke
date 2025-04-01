@@ -152,24 +152,32 @@ steps:
   - |
     set -e
 
-    gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
-    apt-get update
-    apt-get install -y jq
+    # gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
+    # apt-get update
+    # apt-get install -y jq
 
-    timeout=300  
-    interval=20   
-    start_time=$(date +%s)
-    while [ $(date +%s) -lt $(($timeout + start_time)) ]; do
-        status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
+    # timeout=300  
+    # interval=20   
+    # start_time=$(date +%s)
+    # while [ $(date +%s) -lt $(($timeout + start_time)) ]; do
+    #     status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
         
-        if [ "$status" = "Complete" ]; then
-          echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
-          exit 0
-        fi
-        sleep $interval
-    done
-    echo "NCCL job did not complete"
-    exit 1
+    #     if [ "$status" = "Complete" ]; then
+    #       echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
+    #       exit 0
+    #     fi
+    #     sleep $interval
+    # done
+    # echo "NCCL job did not complete"
+    # exit 1
+    if kubectl wait --for=condition=complete=true job/nccl-test-w-0 -n default --timeout=300s; then
+      echo "Job 'nccl-test-w-0' completed successfully."
+      echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
+    else
+      wait_exit_status=$? 
+      echo "Job 'nccl-test-w-0' did not complete within 300 seconds or the job failed."
+      exit 1 
+    fi
   allowFailure: true
   waitFor: ['-']
 
@@ -180,22 +188,20 @@ steps:
   - '-c'
   - |
     set -e
-    bucket=${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result 
-    file_pattern="all_gather_perf*"
-    gcs_file_path=gs://${bucket}/${file_pattern}.txt
-    
-    if gsutil ls $gcs_file_path; then
-      if gsutil cat $gcs_file_path | grep -q "Avg bus bandwidth"; then
-        echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
-        exit 0
-      else
-        echo "NCCL test log file(s) found, but without 'Avg bus bandwidth'"
-        exit 1
-      fi
-    else
-      echo "NCCL test log file not found"
-      exit 1
-    fi
+    gcs_file_path=gs://${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result/all_gather_perf*.txt
+    timeout=300 
+    interval=20 
+    end_time=$(($(date +%s) + timeout))
+    while [ $(date +%s) -lt $end_time ]; do
+        (gsutil cat "$gcs_file_path" 2>/dev/null | grep -q "Avg bus bandwidth") && {
+            echo "Success: Found required content in ${gcs_file_path}."
+            echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
+            exit 0
+        }
+        sleep $interval
+    done
+    echo "Error: Timeout after ${timeout} seconds waiting for content in ${gcs_file_path}."
+    exit 1
   allowFailure: true
   waitFor: ["-"]
 
