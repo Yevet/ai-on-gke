@@ -177,7 +177,7 @@ steps:
 
 - id: 'check a3m NCCL result'
   name: 'gcr.io/cloud-builders/gsutil'
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
   - '-c'
   - |
