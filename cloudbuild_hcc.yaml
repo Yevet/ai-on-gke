@@ -155,12 +155,12 @@ steps:
     gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
     apt-get update
     apt-get install -y jq
-    # Set the _TIMEOUT and _INTERVAL
-    # _TIMEOUT=300  
-    # _INTERVAL=20   
-    _START_TIME=$(date +%s)
+
+    # timeout=300  
+    # interval=20   
+    start_time=$(date +%s)
     echo "start: ${_START_TIME}"
-    # while [ $(date +%s) -lt $(($_TIMEOUT + _START_TIME)) ]; do
+    # while [ $(date +%s) -lt $(($timeout + start_time)) ]; do
         #sleep 300
         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
         
@@ -187,9 +187,9 @@ steps:
     gcs_file_path=gs://${bucket}/${file_pattern}.txt
     echo "gcs_file_path: ${gcs_file_path}"
     
-    if gsutil ls "$gcs_file_path" > /dev/null 2>&1; then
+    if gsutil ls $gcs_file_path > /dev/null 2>&1; then
       echo "NCCL test log file2(s)"
-      if gsutil cat "$gcs_file_path" | grep -q "Avg bus bandwidth"; then
+      if gsutil cat $gcs_file_path | grep -q "Avg bus bandwidth"; then
         echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
         exit 0
       else
