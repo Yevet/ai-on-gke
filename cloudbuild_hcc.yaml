@@ -187,7 +187,7 @@ steps:
     gcs_file_path=gs://${bucket}/${file_pattern}.txt
     echo "gcs_file_path: ${gcs_file_path}"
     
-    if gsutil ls $gcs_file_path > /dev/null 2>&1; then
+    if gsutil ls "${gcs_file_path}" > /dev/null 2>&1; then
       echo "NCCL test log file2(s)"
       if gsutil cat $gcs_file_path | grep -q "Avg bus bandwidth"; then
         echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
@@ -197,7 +197,7 @@ steps:
         exit 1
       fi
     else
-      echo "_TIMEOUT reached. NCCL test log file(s) not found or test did not complete within $_TIMEOUT seconds."
+      echo "NCCL test log file not found"
       exit 1
     fi
   allowFailure: true
