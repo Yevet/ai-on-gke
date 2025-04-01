@@ -158,7 +158,6 @@ steps:
     # Set the _TIMEOUT and _INTERVAL
     # _TIMEOUT=300  
     # _INTERVAL=20   
-    _START_TIME=$(date +%s)
     echo "start: ${_START_TIME}"
     # while [ $(date +%s) -lt $(($_TIMEOUT + _START_TIME)) ]; do
         #sleep 300
@@ -172,6 +171,8 @@ steps:
     # done
     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
     exit 1
+  env:
+    - '_START_TIME=$(date +%s)'
   allowFailure: true
   waitFor: ['-']
 
@@ -183,17 +184,32 @@ steps:
   - |
     set -e
 
-    # Set the _TIMEOUT and _INTERVAL
-    # _TIMEOUT=300  # 10 minutes
-    # _INTERVAL=15  # 15 seconds
+    set -ex  # <--- 添加 'x' 来跟踪执行
 
-    # Construct the bucket name and file pattern
+    echo "--- Starting script ---"
+    echo "DEBUG: Initial _A3MEGA_PROJECT is: '${_A3MEGA_PROJECT}'"
+
     _BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result"
+    echo "DEBUG: _BUCKET_NAME set to: '${_BUCKET_NAME}'"
+    echo "DEBUG: Shell exit status after setting _BUCKET_NAME: $?" 
+
+    echo "--- Assigning _FILE_PATTERN ---"
     _FILE_PATTERN="all_gather_perf*"
+
+    echo "DEBUG: _FILE_PATTERN assigned. Value is now: '${_FILE_PATTERN}'" 
+    echo "DEBUG: Shell exit status after setting _FILE_PATTERN: $?"
+
+    echo "--- Assigning _GCS_FILE_PATH ---"
     _GCS_FILE_PATH="gs://${_BUCKET_NAME}/${_FILE_PATTERN}.txt"
-    echo "_BUCKET_NAME : '${_BUCKET_NAME}'"
-    echo "_FILE_PATTERN: '${_FILE_PATTERN}'"
+    echo "DEBUG: _GCS_FILE_PATH set to: '${_GCS_FILE_PATH}'"
+    echo "DEBUG: Shell exit status after setting _GCS_FILE_PATH: $?" 
+
+    echo "--- Performing final echoes ---"
+    echo "_BUCKET_NAME : ${_BUCKET_NAME}"
+    echo "_FILE_PATTERN: ${_FILE_PATTERN}" # 最终打印检查
     echo "NCCL test log file1(s) : ${_GCS_FILE_PATH}"
+
+    echo "--- Script finished ---"
     
     if gsutil ls "$_GCS_FILE_PATH" > /dev/null 2>&1; then
       echo "NCCL test log file2(s)"
@@ -208,6 +224,8 @@ steps:
       echo "_TIMEOUT reached. NCCL test log file(s) not found or test did not complete within $_TIMEOUT seconds."
       exit 1
     fi
+  env:
+    - '_BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result"'
   allowFailure: true
   waitFor: ["-"]
 
