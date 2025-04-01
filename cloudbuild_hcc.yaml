@@ -190,22 +190,22 @@ steps:
     echo "DEBUG: Initial _A3MEGA_PROJECT is: '${_A3MEGA_PROJECT}'"
 
     export _BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result" 
-    bucket="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result" 
-    echo "DEBUG: _BUCKET_NAME assigned. Value is now: '${_BUCKET_NAME}'"
+    bucket=${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result 
+    echo "DEBUG: _BUCKET_NAME assigned. Value is now: ${_BUCKET_NAME}"
     echo "DEBUG: bucket assigned. Value is now: '${bucket}'"
     echo "DEBUG: Shell exit status after setting _BUCKET_NAME: $?" 
 
     echo "--- Assigning _FILE_PATTERN ---"
-    _FILE_PATTERN="all_gather_perf*"
+    file_pattern="all_gather_perf*"
 
-    echo "DEBUG: _FILE_PATTERN assigned. Value is now: '${_FILE_PATTERN}'" 
+    echo "DEBUG: _FILE_PATTERN assigned. Value is now: ${file_pattern}" 
     echo "DEBUG: Shell exit status after setting _FILE_PATTERN: $?"
 
     echo "--- Assigning _GCS_FILE_PATH ---"
-    _GCS_FILE_PATH="gs://${_BUCKET_NAME}/${_FILE_PATTERN}.txt"
-    echo "DEBUG: _GCS_FILE_PATH set to: '${_GCS_FILE_PATH}'"
+    gcs_file_path="gs://${bucket}/${file_pattern}.txt"
+    echo "DEBUG: _GCS_FILE_PATH set to: '${gcs_file_path}'"
     echo "DEBUG: Shell exit status after setting _GCS_FILE_PATH: $?" 
-
+    _FILE_PATTERN = ""
     echo "--- Performing final echoes ---"
     echo "_BUCKET_NAME : ${_BUCKET_NAME}"
     echo "_FILE_PATTERN: ${_FILE_PATTERN}" # 最终打印检查
