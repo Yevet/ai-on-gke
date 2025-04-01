@@ -184,13 +184,13 @@ steps:
   - |
     set -e
 
-    set -ex  # <--- 添加 'x' 来跟踪执行
+    set -ex 
 
     echo "--- Starting script ---"
     echo "DEBUG: Initial _A3MEGA_PROJECT is: '${_A3MEGA_PROJECT}'"
 
-    _BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result"
-    echo "DEBUG: _BUCKET_NAME set to: '${_BUCKET_NAME}'"
+    export _BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result" # Try exporting
+    echo "DEBUG: _BUCKET_NAME assigned. Value is now: '${_BUCKET_NAME}'"
     echo "DEBUG: Shell exit status after setting _BUCKET_NAME: $?" 
 
     echo "--- Assigning _FILE_PATTERN ---"
