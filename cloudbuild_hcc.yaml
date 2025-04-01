@@ -182,9 +182,9 @@ steps:
   - '-c'
   - |
     set -e
-    bucket = ${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result 
-    file_pattern = "all_gather_perf*"
-    gcs_file_path = gs://${bucket}/${file_pattern}.txt
+    bucket=${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result 
+    file_pattern="all_gather_perf*"
+    gcs_file_path=gs://${bucket}/${file_pattern}.txt
     echo "gcs_file_path: ${gcs_file_path}"
     
     if gsutil ls "$gcs_file_path" > /dev/null 2>&1; then
