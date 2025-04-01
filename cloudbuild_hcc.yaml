@@ -159,7 +159,7 @@ steps:
     # timeout=300  
     # interval=20   
     start_time=$(date +%s)
-    echo "start: ${_START_TIME}"
+    echo "start: ${start_time}"
     # while [ $(date +%s) -lt $(($timeout + start_time)) ]; do
         #sleep 300
         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
@@ -168,9 +168,9 @@ steps:
           echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
           exit 0
         fi
-        # sleep $_INTERVAL
+        # sleep $interval
     # done
-    echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
+    echo "NCCL Job did not complete"
     exit 1
   allowFailure: true
   waitFor: ['-']
@@ -187,7 +187,7 @@ steps:
     gcs_file_path=gs://${bucket}/${file_pattern}.txt
     echo "gcs_file_path: ${gcs_file_path}"
     
-    if gsutil ls "${gcs_file_path}" > /dev/null 2>&1; then
+    if gsutil ls gs://supercomputer-testing-cloudbuild-a3m-nccl-result/all_gather_perf*.txt > /dev/null 2>&1; then
       echo "NCCL test log file2(s)"
       if gsutil cat $gcs_file_path | grep -q "Avg bus bandwidth"; then
         echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
