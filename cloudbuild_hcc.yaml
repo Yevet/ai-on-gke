@@ -144,36 +144,36 @@ steps:
 #   allowFailure: true
 #   waitFor: ["validate cluster"]
 
-# - id: 'wait for a3m nccl job to start'
-#   name: 'gcr.io/cloud-builders/kubectl'
-#   entrypoint: 'sh'
-#   args:
-#   - '-c'
-#   - |
-#     set -e
+- id: 'wait for a3m nccl job to start'
+  name: 'gcr.io/cloud-builders/kubectl'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    set -e
 
-#     gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
-#     apt-get update
-#     apt-get install -y jq
-#     # Set the _TIMEOUT and _INTERVAL
-#     # _TIMEOUT=300  
-#     # _INTERVAL=20   
-#     # _START_TIME=$(date +%s)
-#     # echo "$_START_TIME"
-#     # while [ $(date +%s) -lt $(($_TIMEOUT + _START_TIME)) ]; do
-#         #sleep 300
-#         status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
+    gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
+    apt-get update
+    apt-get install -y jq
+    # Set the _TIMEOUT and _INTERVAL
+    # _TIMEOUT=300  
+    # _INTERVAL=20   
+    _START_TIME=$(date +%s)
+    echo "start: ${_START_TIME}"
+    # while [ $(date +%s) -lt $(($_TIMEOUT + _START_TIME)) ]; do
+        #sleep 300
+        status=$(kubectl get job nccl-test-w-0 -n default -o json | jq -r '.status.conditions[-1].type')
         
-#         if [ "$status" = "Complete" ]; then
-#           echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
-#           exit 0
-#         fi
-#         # sleep $_INTERVAL
-#     # done
-#     echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
-#     exit 1
-#   allowFailure: true
-#   waitFor: ['-']
+        if [ "$status" = "Complete" ]; then
+          echo "nccl start successfully" > /workspace/a3m_nccl_result.txt
+          exit 0
+        fi
+        # sleep $_INTERVAL
+    # done
+    echo "_TIMEOUT reached. Job did not start within $_TIMEOUT seconds."
+    exit 1
+  allowFailure: true
+  waitFor: ['-']
 
 - id: 'check a3m NCCL result'
   name: 'hashicorp/terraform:latest'
