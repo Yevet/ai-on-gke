@@ -193,7 +193,7 @@ steps:
     _GCS_FILE_PATH="gs://${_BUCKET_NAME}/${_FILE_PATTERN}.txt"
     echo "_BUCKET_NAME : '${_BUCKET_NAME}'"
     echo "_FILE_PATTERN: '${_FILE_PATTERN}'"
-    echo "NCCL test log file1(s) : $_GCS_FILE_PATH"
+    echo "NCCL test log file1(s) : ${_GCS_FILE_PATH}"
     # while [ $(date +%s) -lt $(($_TIMEOUT + $(date +%s))) ]; do
       
       if gsutil ls "$_GCS_FILE_PATH" > /dev/null 2>&1; then
