@@ -183,39 +183,13 @@ steps:
   - '-c'
   - |
     set -e
+    bucket = ${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result 
+    file_pattern = "all_gather_perf*"
+    gcs_file_path = gs://${bucket}/${file_pattern}.txt
 
-    set -ex 
-
-    echo "--- Starting script ---"
-    echo "DEBUG: Initial _A3MEGA_PROJECT is: '${_A3MEGA_PROJECT}'"
-
-    export _BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result" 
-    bucket=${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result 
-    echo "DEBUG: _BUCKET_NAME assigned. Value is now: ${_BUCKET_NAME}"
-    echo "DEBUG: bucket assigned. Value is now: '${bucket}'"
-    echo "DEBUG: Shell exit status after setting _BUCKET_NAME: $?" 
-
-    echo "--- Assigning _FILE_PATTERN ---"
-    file_pattern="all_gather_perf*"
-
-    echo "DEBUG: _FILE_PATTERN assigned. Value is now: ${file_pattern}" 
-    echo "DEBUG: Shell exit status after setting _FILE_PATTERN: $?"
-
-    echo "--- Assigning _GCS_FILE_PATH ---"
-    gcs_file_path="gs://${bucket}/${file_pattern}.txt"
-    echo "DEBUG: _GCS_FILE_PATH set to: '${gcs_file_path}'"
-    echo "DEBUG: Shell exit status after setting _GCS_FILE_PATH: $?" 
-    _FILE_PATTERN = ""
-    echo "--- Performing final echoes ---"
-    echo "_BUCKET_NAME : ${_BUCKET_NAME}"
-    echo "_FILE_PATTERN: ${_FILE_PATTERN}" # 最终打印检查
-    echo "NCCL test log file1(s) : ${_GCS_FILE_PATH}"
-
-    echo "--- Script finished ---"
-    
-    if gsutil ls "$_GCS_FILE_PATH" > /dev/null 2>&1; then
+    if gsutil ls "$gcs_file_path" > /dev/null 2>&1; then
       echo "NCCL test log file2(s)"
-      if gsutil cat "$_GCS_FILE_PATH" | grep -q "Avg bus bandwidth"; then
+      if gsutil cat "$gcs_file_path" | grep -q "Avg bus bandwidth"; then
         echo "NCCL test log file(s) found with necessary contents" > /workspace/a3m_nccl_result.txt
         exit 0
       else
@@ -226,8 +200,6 @@ steps:
       echo "_TIMEOUT reached. NCCL test log file(s) not found or test did not complete within $_TIMEOUT seconds."
       exit 1
     fi
-  env:
-    - '_BUCKET_NAME="${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result"'
   allowFailure: true
   waitFor: ["-"]
 
