@@ -176,7 +176,7 @@ steps:
   waitFor: ['-']
 
 - id: 'check a3m NCCL result'
-  name: 'hashicorp/terraform:latest'
+  name: 'gcr.io/cloud-builders/gsutil'
   entrypoint: 'sh'
   args:
   - '-c'
