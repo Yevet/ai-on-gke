@@ -152,7 +152,7 @@ steps:
   - |
     set -e
 
-    # gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
+    gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
     # apt-get update
     # apt-get install -y jq
 
