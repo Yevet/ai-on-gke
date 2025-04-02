@@ -78,10 +78,11 @@ steps:
             echo "(No new untracked files detected)"
           fi
           echo "----------------------------------------------------"
-          echo "FAILURE: Build failed due to unexpected file changes."
-          echo "Please review the status, diff, and new file content above. The regions and zones has changed for A3U and A3M"
-          echo "Please follow the guildline in ./applications/hcc/README_update_zone.md to update regions and zones."
-          echo "Do not forget to commit the changes after running the scripts."
+          echo "\033[1m\033[31mFAILURE: Build failed due to unexpected file changes.\033[0m"
+          echo "\033[1m\033[31mPlease review the status, diff, and new file content above. The regions and zones has changed for A3U and A3M\033[0m"
+          echo "\033[1m\033[31mPlease follow the guideline in ai-on-gke/applications/hcc/README_update_zone.md to update regions and zones.\033[0m"
+          echo "\033[1m\033[31mDo not forget to commit the changes after running the scripts.\033[0m"
+
           exit 1 
         fi
     
