@@ -1,61 +1,91 @@
 steps:
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'bash'
-    args: [ '-c', 'gcloud secrets versions access latest --secret=github-ssh-key > /root/.ssh/id_github' ]
-    volumes:
-    - name: 'ssh'
-      path: /root/.ssh
+  # - name: gcr.io/cloud-builders/gcloud
+  #   entrypoint: 'bash'
+  #   args: [ '-c', 'gcloud secrets versions access latest --secret=github-ssh-key > /root/.ssh/id_github' ]
+  #   volumes:
+  #   - name: 'ssh'
+  #     path: /root/.ssh
 
-  # Set up git with key and domain
-  - name: 'gcr.io/cloud-builders/git'
-    entrypoint: 'bash'
-    args:
-    - '-c'
-    - |
-      chmod 600 /root/.ssh/id_github
-      cat <<EOF >/root/.ssh/config
-      Hostname github.com
-      IdentityFile /root/.ssh/id_github
-      EOF
-      ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
-    volumes:
-    - name: 'ssh'
-      path: /root/.ssh
+  # # Set up git with key and domain
+  # - name: 'gcr.io/cloud-builders/git'
+  #   entrypoint: 'bash'
+  #   args:
+  #   - '-c'
+  #   - |
+  #     chmod 600 /root/.ssh/id_github
+  #     cat <<EOF >/root/.ssh/config
+  #     Hostname github.com
+  #     IdentityFile /root/.ssh/id_github
+  #     EOF
+  #     ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
+  #   volumes:
+  #   - name: 'ssh'
+  #     path: /root/.ssh
 
-  - name: 'gcr.io/cloud-builders/git'
-    entrypoint: 'bash'
-    args:
-    - '-c'
-    - |
-        git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME 
-        git pull
-        git checkout $BRANCH_NAME
-        git pull origin $BRANCH_NAME
-
+  # - name: 'gcr.io/cloud-builders/git'
+  #   entrypoint: 'bash'
+  #   args:
+  #   - '-c'
+  #   - |
+  #       git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME 
+  #       git pull
+  #       git checkout $BRANCH_NAME
+  #       git pull origin $BRANCH_NAME
   - name: 'python:3.9-slim'
+    id: 'run-update-script'
     entrypoint: 'bash'
     args:
-    - '-c'
-    - |
-        pip install pyyaml google-cloud-compute
-        python ./applications/hcc/update_zone_region.py --project_id $PROJECT_ID
-        touch ./applications/hcc/new_file.txt
+      - '-c'
+      - |
+        set -e
+        echo "Installing dependencies..."
+        pip install --quiet --no-warn-script-location pyyaml google-cloud-compute
+
+        echo "Running update script for project ${PROJECT_ID}..."
+        python ./applications/hcc/update_zone_region.py --project_id "$PROJECT_ID"
+        echo "Script finished."
 
   - name: 'gcr.io/cloud-builders/git'
+    id: 'check-git-diff'
     entrypoint: 'bash'
     args:
-    - '-c'
-    - |
-        git status
-        git branch
-        git config user.email ${_GITUSER_EMAIL}
-        git config user.name "Yevet"
-        git add ./applications/hcc/zone_to_region1.json
-        git commit -m "Update from Cloud Build"
-        git push origin ${BRANCH_NAME}
-    volumes:
-    - name: 'ssh'
-      path: /root/.ssh
+      - '-c'
+      - |
+        set -e
+        echo "Checking for file modifications..."
+        git_status_output=$(git status --porcelain)
+
+        if [ -z "$git_status_output" ]; then
+          echo "SUCCESS: No uncommitted changes detected after running the script. Workspace is clean."
+        else
+          echo "ERROR: Uncommitted changes detected after running the script!"
+          echo "-------------------- GIT STATUS --------------------"
+          echo "$git_status_output"
+          echo "-------------------- GIT DIFF ----------------------"
+          git diff
+          echo "----------------------------------------------------"
+          echo "FAILURE: Build failed due to unexpected file changes."
+          echo "Please review the diff above. If these changes are expected,"
+          echo "commit them to your repository. Otherwise, update the script or source files."
+          exit 1
+        fi
+    
+
+  # - name: 'gcr.io/cloud-builders/git'
+  #   entrypoint: 'bash'
+  #   args:
+  #   - '-c'
+  #   - |
+  #       git status
+  #       git branch
+  #       git config user.email ${_GITUSER_EMAIL}
+  #       git config user.name "Yevet"
+  #       git add ./applications/hcc/zone_to_region1.json
+  #       git commit -m "Update from Cloud Build"
+  #       git push origin ${BRANCH_NAME}
+  #   volumes:
+  #   - name: 'ssh'
+  #     path: /root/.ssh
 
 options:
   logging: CLOUD_LOGGING_ONLY
