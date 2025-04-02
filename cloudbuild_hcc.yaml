@@ -239,12 +239,12 @@ steps:
     set -e
 
     gcloud container clusters get-credentials cloudbuild-a3m-nemo --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
-    if kubectl wait --for=condition=complete=true job/benchmark -n default --timeout=30000s; then
+    if kubectl wait --for=condition=complete=true job/benchmark -n default --timeout=3000s; then
       echo "Job 'benchmark' completed successfully."
       echo "nemo job start successfully" > /workspace/a3m_nemo_result.txt
     else
       wait_exit_status=$? 
-      echo "Job 'benchmark' did not complete within 30000 seconds or the job failed."
+      echo "Job 'benchmark' did not complete within 3000 seconds or the job failed."
       exit 1 
     fi
   waitFor: ['create a3m with nemo']
@@ -322,3 +322,4 @@ substitutions:
 options:
   logging: CLOUD_LOGGING_ONLY
   substitutionOption: "ALLOW_LOOSE"
+timeout: 9000s
