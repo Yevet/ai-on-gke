@@ -117,118 +117,118 @@ steps:
 #     -auto-approve -no-color
 #   waitFor: ['create a3ultra with nemo']
 
-# - id: 'create a3m with nccl'
-#   name: 'hashicorp/terraform:latest'
-#   entrypoint: 'sh'
-#   args:
-#   - '-c'
-#   - |
-#     set -e
+- id: 'create a3m with nccl'
+  name: 'hashicorp/terraform:latest'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    set -e
 
-#     cd /workspace/applications/hcc/
-#     terraform apply \
-#     -var-file=a3mega_workloads.tfvars \
-#     -var=project_id=$_A3MEGA_PROJECT \
-#     -var=a3mega_recipe="gke-nccl" \
-#     -var=gpu_type="A3 Mega" \
-#     -var=node_count_gke_nccl=2 \
-#     -var=goog_cm_deployment_name="cloudbuild-a3m-nccl" \
-#     -var=a3_mega_zone=$_A3MEGA_ZONE \
-#     -var=reservation=$_A3MEGA_RESERVATION \
-#     -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
-#     -auto-approve -no-color
+    cd /workspace/applications/hcc/
+    terraform apply \
+    -var-file=a3mega_workloads.tfvars \
+    -var=project_id=$_A3MEGA_PROJECT \
+    -var=a3mega_recipe="gke-nccl" \
+    -var=gpu_type="A3 Mega" \
+    -var=node_count_gke_nccl=2 \
+    -var=goog_cm_deployment_name="cloudbuild-a3m-nccl" \
+    -var=a3_mega_zone=$_A3MEGA_ZONE \
+    -var=reservation=$_A3MEGA_RESERVATION \
+    -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
+    -auto-approve -no-color
 
-#     echo "cluster creation successfully" > /workspace/a3m_nccl_result.txt
-#   waitFor: ["validate cluster"]
+    echo "cluster creation successfully" > /workspace/a3m_nccl_result.txt
+  waitFor: ["validate cluster"]
 
-# - id: 'wait for a3m nccl job to complete'
-#   name: 'gcr.io/cloud-builders/kubectl'
-#   entrypoint: 'sh'
-#   args:
-#   - '-c'
-#   - |
-#     set -e
+- id: 'wait for a3m nccl job to complete'
+  name: 'gcr.io/cloud-builders/kubectl'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    set -e
 
-#     gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
-#     if kubectl wait --for=condition=complete=true job/nccl-test-w-0 -n default --timeout=300s; then
-#       echo "Job 'nccl-test-w-0' completed successfully."
-#       echo "nccl job start successfully" > /workspace/a3m_nccl_result.txt
-#     else
-#       wait_exit_status=$? 
-#       echo "Job 'nccl-test-w-0' did not complete within 300 seconds or the job failed."
-#       exit 1 
-#     fi
-#   waitFor: ['create a3m with nccl']
+    gcloud container clusters get-credentials cloudbuild-a3m-nccl --location $_A3MEGA_REGION --project $_A3MEGA_PROJECT
+    if kubectl wait --for=condition=complete=true job/nccl-test-w-0 -n default --timeout=300s; then
+      echo "Job 'nccl-test-w-0' completed successfully."
+      echo "nccl job start successfully" > /workspace/a3m_nccl_result.txt
+    else
+      wait_exit_status=$? 
+      echo "Job 'nccl-test-w-0' did not complete within 300 seconds or the job failed."
+      exit 1 
+    fi
+  waitFor: ['create a3m with nccl']
 
-# - id: 'check a3m nccl result'
-#   name: 'gcr.io/cloud-builders/gsutil'
-#   entrypoint: 'sh'
-#   args:
-#   - '-c'
-#   - |
-#     set -e
-#     gcs_file_path=gs://${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result/all_gather_perf*.txt
-#     timeout=300 
-#     interval=20 
-#     end_time=$(($(date +%s) + timeout))
-#     while [ $(date +%s) -lt $end_time ]; do
-#         (gsutil cat "$gcs_file_path" 2>/dev/null | grep -q "Avg bus bandwidth") && {
-#             echo "Success: Found required content in ${gcs_file_path}."
-#             echo "nccl log found with necessary contents" > /workspace/a3m_nccl_result.txt
-#             exit 0
-#         }
-#         sleep $interval
-#     done
-#     echo "Error: Timeout after ${timeout} seconds waiting for content in ${gcs_file_path}."
-#     exit 1
-#   waitFor: ["wait for a3m nccl job to complete"]
+- id: 'check a3m nccl result'
+  name: 'gcr.io/cloud-builders/gsutil'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    set -e
+    gcs_file_path=gs://${_A3MEGA_PROJECT}-cloudbuild-a3m-nccl-result/all_gather_perf*.txt
+    timeout=300 
+    interval=20 
+    end_time=$(($(date +%s) + timeout))
+    while [ $(date +%s) -lt $end_time ]; do
+        (gsutil cat "$gcs_file_path" 2>/dev/null | grep -q "Avg bus bandwidth") && {
+            echo "Success: Found required content in ${gcs_file_path}."
+            echo "nccl log found with necessary contents" > /workspace/a3m_nccl_result.txt
+            exit 0
+        }
+        sleep $interval
+    done
+    echo "Error: Timeout after ${timeout} seconds waiting for content in ${gcs_file_path}."
+    exit 1
+  waitFor: ["wait for a3m nccl job to complete"]
 
-# - id: 'cleanup a3mega with nccl'
-#   name: 'hashicorp/terraform:latest'
-#   entrypoint: 'bash'
-#   args:
-#   - '-c'
-#   - |
-#     set -e
+- id: 'cleanup a3mega with nccl'
+  name: 'hashicorp/terraform:latest'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    set -e
 
-#     cd /workspace/applications/hcc/
-#     terraform destroy \
-#     -var-file=a3mega_workloads.tfvars \
-#     -var=project_id=$_A3MEGA_PROJECT \
-#     -var=a3mega_recipe="gke-nccl" \
-#     -var=gpu_type="A3 Mega" \
-#     -var=node_count_gke_nccl=2 \
-#     -var=goog_cm_deployment_name="cloudbuild-a3m-nccl" \
-#     -var=a3_mega_zone=$_A3MEGA_ZONE \
-#     -var=reservation=$_A3MEGA_RESERVATION \
-#     -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
-#     -auto-approve -no-color
-#   waitFor: ["check a3m nccl result"]
+    cd /workspace/applications/hcc/
+    terraform destroy \
+    -var-file=a3mega_workloads.tfvars \
+    -var=project_id=$_A3MEGA_PROJECT \
+    -var=a3mega_recipe="gke-nccl" \
+    -var=gpu_type="A3 Mega" \
+    -var=node_count_gke_nccl=2 \
+    -var=goog_cm_deployment_name="cloudbuild-a3m-nccl" \
+    -var=a3_mega_zone=$_A3MEGA_ZONE \
+    -var=reservation=$_A3MEGA_RESERVATION \
+    -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
+    -auto-approve -no-color
+  waitFor: ["check a3m nccl result"]
 
 
-# - id: 'create a3m with nemo'
-#   name: 'hashicorp/terraform:latest'
-#   entrypoint: 'sh'
-#   args:
-#   - '-c'
-#   - |
-#     set -e
+- id: 'create a3m with nemo'
+  name: 'hashicorp/terraform:latest'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    set -e
 
-#     cd /workspace/applications/hcc/
-#     terraform apply \
-#     -var-file=a3mega_workloads.tfvars \
-#     -var=project_id=$_A3MEGA_PROJECT \
-#     -var=a3mega_recipe="llama3.1_7b_nemo_pretraining" \
-#     -var=gpu_type="A3 Mega" \
-#     -var=node_count_llama_3_7b=2 \
-#     -var=goog_cm_deployment_name="cloudbuild-a3m-nemo" \
-#     -var=a3_mega_zone=$_A3MEGA_ZONE \
-#     -var=reservation=$_A3MEGA_RESERVATION \
-#     -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
-#     -auto-approve -no-color
+    cd /workspace/applications/hcc/
+    terraform apply \
+    -var-file=a3mega_workloads.tfvars \
+    -var=project_id=$_A3MEGA_PROJECT \
+    -var=a3mega_recipe="llama3.1_7b_nemo_pretraining" \
+    -var=gpu_type="A3 Mega" \
+    -var=node_count_llama_3_7b=2 \
+    -var=goog_cm_deployment_name="cloudbuild-a3m-nemo" \
+    -var=a3_mega_zone=$_A3MEGA_ZONE \
+    -var=reservation=$_A3MEGA_RESERVATION \
+    -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
+    -auto-approve -no-color
 
-#     echo "cluster creation successfully" > /workspace/a3m_nemo_result.txt
-#   waitFor: ["cleanup a3mega with nccl"]
+    echo "cluster creation successfully" > /workspace/a3m_nemo_result.txt
+  waitFor: ["cleanup a3mega with nccl"]
 
 - id: 'wait for a3m nemo job to complete'
   name: 'gcr.io/cloud-builders/kubectl'
@@ -247,7 +247,7 @@ steps:
       echo "Job 'benchmark' did not complete within 30000 seconds or the job failed."
       exit 1 
     fi
-  waitFor: ['-']
+  waitFor: ['create a3m with nemo']
 
 - id: 'check a3m nemo result'
   name: 'gcr.io/cloud-builders/gsutil'
@@ -306,43 +306,6 @@ steps:
     -var=placement_policy_name=$_A3MEGA_PLACEMENT_POLICY_NAME \
     -auto-approve -no-color
   waitFor: ['check a3m nemo result']
-
-# - id: 'check result'
-#   name: 'hashicorp/terraform:latest'
-#   entrypoint: 'bash'
-#   args:
-#   - '-c'
-#   - |
-#     if [[ $(cat /workspace/a3m_nccl_result.txt) != "cluster creation successfully" ]]; then
-#       echo "a3mega with nccl cluster creation failed"
-#       exit 1
-#     fi
-  
-#     if [[ $(cat /workspace/a3m_nccl_result.txt) != "nccl job start successfully" ]]; then
-#       echo "a3mega with nccl job fail to complete"
-#       exit 1
-#     fi
-
-#     if [[ $(cat /workspace/a3m_nccl_result.txt) != "nccl log found with necessary contents" ]]; then
-#       echo "a3mega with nccl test result file not found or did not find necessary contents"
-#       exit 1
-#     fi
-
-#     if [[ $(cat /workspace/a3m_nemo_result.txt) != "cluster creation successfully" ]]; then
-#       echo "a3mega with nemo cluster creation failed"
-#       exit 1
-#     fi
-  
-#     if [[ $(cat /workspace/a3m_nemo_result.txt) != "nemo job start successfully" ]]; then
-#       echo "a3mega with nemo job start failed"
-#       exit 1
-#     fi
-
-#     if [[ $(cat /workspace/a3m_nemo_result.txt) != "nccl log found with necessary contents" ]]; then
-#       echo "a3mega with nemo test result file not found or did not find necessary contents"
-#       exit 1
-#     fi
-#   waitFor: ['cleanup a3mega with nccl', 'cleanup a3mega with nemo']
 
 substitutions:
   _A3ULTRA_ZONE: ""
