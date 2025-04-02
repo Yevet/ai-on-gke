@@ -156,5 +156,5 @@ if __name__ == "__main__":
   parser.add_argument("--project_id", required=True, help="Your Google Cloud project ID.") 
   args = parser.parse_args()
   write_zone_to_region_map_to_json(args.project_id)
-  # update_blueprint_metadata(args.project_id, "a3-megagpu-8g")
-  # update_blueprint_metadata(args.project_id, "a3-ultragpu-8g")
+  update_blueprint_metadata(args.project_id, "a3-megagpu-8g")
+  update_blueprint_metadata(args.project_id, "a3-ultragpu-8g")

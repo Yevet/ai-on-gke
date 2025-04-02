@@ -59,10 +59,10 @@ steps:
 
         if [ -z "$git_status_output" ]; then
           # 无变化
-          echo "SUCCESS: No uncommitted changes detected. Workspace is clean."
+          echo "SUCCESS: No region/zones change for hcc detected. Workspace is clean."
         else
           # 检测到变化
-          echo "ERROR: Uncommitted changes detected after running the script!"
+          echo "ERROR: region/zones change for hcc detected after running the script!"
           echo "-------------------- GIT STATUS --------------------"
           echo "$git_status_output"
           echo "-------------------- GIT DIFF (Tracked Files) ------"
