@@ -44,10 +44,6 @@ spec:
             type: ET_GCE_ZONE
             gce_zone:
               allowlisted_zones:
-              - asia-northeast1-b
-              - asia-southeast1-b
-              - asia-southeast1-c
-              - australia-southeast1-c
               - europe-west1-b
               - europe-west1-c
               - europe-west3-c
