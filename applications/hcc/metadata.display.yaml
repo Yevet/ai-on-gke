@@ -31,19 +31,26 @@ spec:
           section: required_config
           subtext: Select the accelerator machine type.
           enumValueLabels:
-          - label: "A3 Mega, NVIDIA H100 80GB MEGA: a3-megagpu-8g"
+          - label: 'A3 Mega, NVIDIA H100 80GB MEGA: a3-megagpu-8g'
             value: A3 Mega
-          - label: "A3 Ultra, NVIDIA H200 141GB: a3-ultragpu-8g"
+          - label: 'A3 Ultra, NVIDIA H200 141GB: a3-ultragpu-8g'
             value: A3 Ultra
         a3_mega_zone:
           name: a3_mega_zone
           title: Cluster zone
           section: required_config
-          subtext: Select from locations with available accelerators. If you have a reservation, select the zone where your reservation is located.
+          subtext: Select from locations with available accelerators. If you have
+            a reservation, select the zone where your reservation is located.
           xGoogleProperty:
             type: ET_GCE_ZONE
             gce_zone:
               allowlisted_zones:
+              - asia-east1-c
+              - asia-northeast1-b
+              - asia-southeast1-b
+              - asia-southeast1-c
+              - australia-southeast1-c
+              - europe-north1-c
               - europe-west1-b
               - europe-west1-c
               - europe-west3-c
@@ -69,12 +76,15 @@ spec:
           name: a3_ultra_zone
           title: Cluster zone
           section: required_config
-          subtext: Select from locations with available accelerators. If you have a reservation, select the zone where your reservation is located.
+          subtext: Select from locations with available accelerators. If you have
+            a reservation, select the zone where your reservation is located.
           xGoogleProperty:
             type: ET_GCE_ZONE
             gce_zone:
               allowlisted_zones:
               - europe-west1-b
+              - us-central1-b
+              - us-east4-b
               - us-east5-a
               - us-east7-c
               - us-west1-c
@@ -85,9 +95,11 @@ spec:
             type: DISPLAY_VARIABLE_TOGGLE_TYPE_UNSPECIFIED
         a3_mega_consumption_model:
           name: a3_mega_consumption_model
-          title: Consumption options 
+          title: Consumption options
           section: required_config
-          subtext: For optimal performance with distributed AI workloads, reserve densely allocated accelerator capacity. See <a href="https://cloud.google.com/ai-hypercomputer/docs/consumption-models"><i>Consumption options</i></a> for more details.</br>
+          subtext: For optimal performance with distributed AI workloads, reserve
+            densely allocated accelerator capacity. See <a href="https://cloud.google.com/ai-hypercomputer/docs/consumption-models"><i>Consumption
+            options</i></a> for more details.</br>
           enumValueLabels:
           - label: Reservation
             value: Reservation
@@ -100,7 +112,9 @@ spec:
           name: a3_ultra_consumption_model
           title: Consumption options
           section: required_config
-          subtext: For optimal performance with distributed AI workloads, reserve densely allocated accelerator capacity. See <a href="https://cloud.google.com/ai-hypercomputer/docs/consumption-models"><i>Consumption options</i></a> for more details.</br>
+          subtext: For optimal performance with distributed AI workloads, reserve
+            densely allocated accelerator capacity. See <a href="https://cloud.google.com/ai-hypercomputer/docs/consumption-models"><i>Consumption
+            options</i></a> for more details.</br>
           enumValueLabels:
           - label: Reservation
             value: Reservation
@@ -158,7 +172,8 @@ spec:
           name: node_count_gke
           title: Node count
           section: required_config
-          subtext: Please enter a value >= 0. If using a reservation, ensure that your reservation has the required capacity.
+          subtext: Please enter a value >= 0. If using a reservation, ensure that
+            your reservation has the required capacity.
           toggleUsingVariables:
           - variableName: recipe
             variableValues:
@@ -168,7 +183,8 @@ spec:
           name: node_count_gke_nccl
           title: Node count
           section: required_config
-          subtext: Please enter a value >= 2. If using a reservation, ensure that your reservation has the required capacity.
+          subtext: Please enter a value >= 2. If using a reservation, ensure that
+            your reservation has the required capacity.
           toggleUsingVariables:
           - variableName: recipe
             variableValues:
@@ -178,12 +194,13 @@ spec:
           name: node_count_llama_3_7b
           title: Node count
           section: required_config
-          subtext: Some benchmarks require a minimum number of nodes. If using a reservation, ensure that your reservation has the required capacity
+          subtext: Some benchmarks require a minimum number of nodes. If using a reservation,
+            ensure that your reservation has the required capacity
           enumValueLabels:
-            - label: 2
-              value: 2
-            - label: 4
-              value: 4
+          - label: 2
+            value: 2
+          - label: 4
+            value: 4
           toggleUsingVariables:
           - variableName: recipe
             variableValues:
@@ -193,12 +210,13 @@ spec:
           name: node_count_llama_3_70b
           title: Node count
           section: required_config
-          subtext: Some benchmarks require a minimum number of nodes. If using a reservation, ensure that your reservation has the required capacity
+          subtext: Some benchmarks require a minimum number of nodes. If using a reservation,
+            ensure that your reservation has the required capacity
           enumValueLabels:
-            - label: 32
-              value: 32
-            - label: 40
-              value: 40
+          - label: 32
+            value: 32
+          - label: 40
+            value: 40
           toggleUsingVariables:
           - variableName: recipe
             variableValues:
