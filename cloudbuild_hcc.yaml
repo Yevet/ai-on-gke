@@ -183,9 +183,9 @@ steps:
     exit 1
   waitFor: ["wait for a3m nccl job to complete"]
 
-- id: 'cleanup a3mega with nccl'
+- id: 'cleanup a3m with nccl'
   name: 'hashicorp/terraform:latest'
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
   - '-c'
   - |
@@ -228,7 +228,7 @@ steps:
     -auto-approve -no-color
 
     echo "cluster creation successfully" > /workspace/a3m_nemo_result.txt
-  waitFor: ["cleanup a3mega with nccl"]
+  waitFor: ["cleanup a3m with nccl"]
 
 - id: 'wait for a3m nemo job to complete'
   name: 'gcr.io/cloud-builders/kubectl'
@@ -285,9 +285,9 @@ steps:
     exit 1
   waitFor: ["wait for a3m nemo job to complete"]
 
-- id: 'cleanup a3mega with nemo'
+- id: 'cleanup a3m with nemo'
   name: 'hashicorp/terraform:latest'
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
   - '-c'
   - |
