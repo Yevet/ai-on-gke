@@ -52,4 +52,5 @@ steps:
           echo "ERROR: Do not forget to commit the changes after running the scripts."
           exit 1 
         fi
-    
+options:
+  logging: CLOUD_LOGGING_ONLY
